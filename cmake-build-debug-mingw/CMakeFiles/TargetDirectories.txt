@@ -1,0 +1,3 @@
+C:/Users/Water Stone/CLionProjects/test/cmake-build-debug-mingw/CMakeFiles/edit_cache.dir
+C:/Users/Water Stone/CLionProjects/test/cmake-build-debug-mingw/CMakeFiles/untitled.dir
+C:/Users/Water Stone/CLionProjects/test/cmake-build-debug-mingw/CMakeFiles/rebuild_cache.dir
