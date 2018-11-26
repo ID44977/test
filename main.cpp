@@ -58,9 +58,6 @@ int main(){
                     stx.pop();
                     sty.pop();
                 }
-
-
-
             }
 
             if((stx.empty()&&sty.empty())|| (i== n-1&&j== n-1))
@@ -2445,7 +2442,7 @@ int main() {
 }
 */
 
-//20181119
+//20181119 实验10 最短路径+拓扑排序【李延红 】2018-11-19周一
 /*
 //ADS图应用--最短路径
 #include <iostream>
@@ -2787,41 +2784,491 @@ int main() {
     return 0;
 }
 */
+/*
+//C追星
 #include <iostream>
 using namespace std;
 
-class Account
-{
-private  Object thisLock = new Object();
-    int balance;
-public Account (int initial)
+int MaxLen;
+const int MaxDist=9999;
+class Map{
+private:
+    int **Matrix;
+    int Vexnum;
+public:
+    void SetMatrix(int vnum,int **mx);
+    void ShortestPath_DIJ(int v0);
+    void refree()
     {
-        balance = initial ;
+        for(int i=0;i<Vexnum;i++)
+            delete [] Matrix[i];
+        delete []Matrix;
     }
-public void Withdraw(object amount)
+};
+void Map::SetMatrix(int vnum,int **mx)
+{
+    int i,j;
+    Vexnum = vnum;
+    Matrix=new int* [MaxLen];
+    for(i=0;i<MaxLen;i++)
     {
+        Matrix[i]=new int[MaxLen];
+        for(j=0;j<MaxLen;j++)
+            Matrix[i][j]=MaxDist;
+    }
+    for(i=0;i<Vexnum;i++)
+        for(j=0;j<Vexnum;j++)
+            if(mx[i][j])
+                Matrix[i][j]=mx[i][j];
+}
+void Map::ShortestPath_DIJ(int v0)
+{
+    int i,j,v,w,mmin;
+    int *dist = new int[Vexnum];
+    bool *final = new bool[Vexnum];
+    int path[Vexnum][Vexnum];
+    int len[Vexnum];
+    for(int i = 0; i < Vexnum; i++)
+    {
+        final[i]=false;
+        dist[i]=Matrix[v0][i];
+    }
+    for(int i=0;i<Vexnum;i++)
+    {
+        path[i][0]=v0;
+        path[i][1]=i;
+    }
+    for(int i = 0;i<Vexnum;i++)
+    {
+        len[i]=2;
+    }
+    dist[v0]=0;
+    final[v0]=true;
+    for(int i=0;i<Vexnum;i++)
+    {
+        mmin=MaxDist;
+        for(int j=0;j<Vexnum;j++)
         {
-            if (balance >=(int)amount)
+            if(!final[j] && mmin > dist[j])
             {
-                Thread.Sleep (500);
-                balance =balance -(int)amount;
-                Console .WriteLine ("{0}操作成功。余额={1}",Thread.CurrentThread.Name,balance);
+                mmin=dist[j];
+                v=j;
             }
-            else
+        }
+        if(mmin==MaxDist || v==Vexnum-1)    //一旦v0到vN的最短路径取到，就可以停止
+            break;
+        else
+        {
+            final[v]=true;
+            for(int j=0;j<Vexnum;j++)
             {
-                Console .WriteLine ("{0}操作失败。账户余额不足。余额={1}",Thread.CurrentThread.Name,balance);
+                if(!final[j] && Matrix[v][j]+mmin<dist[j])
+                {
+                    dist[j]=Matrix[v][j]+mmin;
+                    for(int p=0;p<len[v];p++)
+                    {
+                        path[j][p]=path[v][p];
+                    }
+                    len[j]=len[v]+1;
+                    path[j][len[j]-1]=j;
+                }
             }
         }
     }
+    cout<<dist[Vexnum-1]<<endl;
+    delete []dist;
+    delete []final;
 }
-class Test
+int main()
 {
-    static void Main()
+    int t,k,v1,v2,distan;
+    int vnum,v0;
+    int **mx;
+    Map test;
+    while(cin>>vnum)
     {
-        Account acc = new Account(1000);
-        Thread t1 = new Thread(acc.Withdraw);t1.Name="小明";
-        Thread t2 = new Thread(acc.Withdraw);t2.Name="小红";
-        t1.Start(600);t2.Start(600);Console.ReadKey();
+        MaxLen=vnum;
+        mx=new int* [MaxLen];
+        for(int i=0;i<MaxLen;i++)
+        {
+            mx[i]=new int[MaxLen];
+        }
+        cin>>t;
+        for(int i=0;i<vnum;i++)
+            for(int j=0;j<vnum;j++)
+                mx[i][j]=MaxDist;
+        while(t--)
+        {
+            cin>>v1>>v2>>distan;
+            mx[v1-1][v2-1]=mx[v1-1][v2-1]<distan?mx[v1-1][v2-1]:distan;       //转换成邻接矩阵要取小的那个
+            mx[v2-1][v1-1]=mx[v2-1][v1-1]<distan?mx[v2-1][v1-1]:distan;
+        }
+        test.SetMatrix(vnum,mx);
+        test.ShortestPath_DIJ(0);
+        test.refree();
+        for(int i=0;i<vnum;i++)
+            delete [] mx[i];
+        delete []mx;
     }
+    return 0;
+}
+*/
+
+//实验11 静态查找【李延红2018-11-26周一下午】
+/*
+//A DS静态查找之顺序查找
+#include <iostream>
+using namespace std;
+
+int Sequential_Search(int *a, int n, int key){
+    int i;
+    a[0] = key;
+    i = n;
+    while(a[i] != key){
+        i--;
+    }
+    return i;
 }
 
+int main(){
+    int n, t, key;
+    int a[100];
+    cin >> n;
+    for(int i = 1; i <= n; i++){
+        cin >> a[i];
+    }
+    cin >> t;
+    while(t--){
+        cin >> key;
+        //cout << Sequential_Search(a,n,key) << endl;
+        int flag = Sequential_Search(a,n,key);
+        if(flag){
+            cout << flag <<endl;
+        } else
+            cout << "error" <<endl;
+    }
+}
+*/
+/*
+#include<iostream>
+using namespace std;
+
+int main()
+{
+    int t,k,n,i;
+    int num[100];
+    cin>>n;
+    for(i=1;i<n+1;i++)
+        cin>>num[i];
+    cin>>t;
+    while(t--)
+    {
+        cin>>k;
+        num[0]=k;
+        for(i=n;i>=0;i--)
+        {
+            if(num[i]==k&&i!=0)
+            {
+                cout<<i<<endl;
+                break;
+            }
+            if(num[i]==num[0])
+                cout<<"error"<<endl;
+        }
+    }
+    return 0;
+}
+*/
+/*
+//B
+#include <iostream>
+using namespace std;
+
+int Binary_Search(int *a, int n, int key){
+    int low, high, mid;
+    low = 1;
+    high = n;
+    while(low <= high){
+        mid = (low + high) / 2;
+        if(key < a[mid])
+            high = mid - 1;
+        else if(key > a[mid])
+            low = mid +1;
+        else
+            return mid;
+    }
+    return 0;
+}
+
+int main(){
+    int n, t, key;
+    int a[100];
+    cin >> n;
+    for(int i = 1; i <= n; i++){
+        cin >> a[i];
+    }
+    cin >> t;
+    while(t--){
+        cin >> key;
+        //cout << Binary_Search(a,n,key) << endl;
+        int flag = Binary_Search(a,n,key);
+        if(flag){
+            cout << flag <<endl;
+        } else
+            cout << "error" <<endl;
+    }
+}
+*/
+/*
+//C DS静态查找之顺序索引查找
+#include<iostream>
+using namespace std;
+
+int main()
+{
+    int m, t, k, n, i, num[100], num2[100];
+    cin >> n;
+    for(i = 1; i < n + 1; i++)
+        cin >> num[i];
+    cin >> t;
+    for(i = 1; i < t + 1; i++)
+        cin >> num2[i];
+    cin >> m;
+    while(m--)
+    {
+        int p, flag = 0, f = 0, g = 1;
+        cin >> p;
+        for(int i = 1; i < t + 1; i++)
+        {
+            if(p > num2[i])
+            {
+                f++;
+                g++;
+            }
+            else if(p <= num2[i])
+            {
+                for(int d = f * (n / t) + 1; d <= (f + 1) * (n / t); d++)
+                    if(p != num[d])
+                        g++;
+                    else
+                    {
+                        g++;
+                        flag = 1;
+                        cout<< d << '-' << g <<endl;
+                        break;
+                    }
+            }
+            if(flag == 1)
+                break;
+        }
+        if(flag == 0)
+            cout<<"error"<<endl;
+
+    }
+    return 0;
+}
+*/
+
+//关键路径-STL版
+#include <iostream>
+#include <vector>
+#include <string>
+#include <queue>
+using namespace std;
+
+class Vertex {
+public:
+    int indexNo;
+    bool hasEnterQueue;
+    int early;
+    int later;
+
+    Vertex(int indexNo) {
+        this->indexNo = indexNo;
+        this->hasEnterQueue = false;
+        early = -1;
+        later = 0x7FFFF;
+    }
+    void updateEarly(int parentEarly, int edgeValue) {
+        int newEarly = parentEarly + edgeValue;
+        if (newEarly > this->early)
+            this->early = newEarly;
+    }
+    void updateLater(int childLater, int edgeValue) {
+        int newLater = childLater - edgeValue;
+        if (newLater < this->later)
+            this->later = newLater;
+    }
+};
+
+
+class Graph {
+public:
+    vector<Vertex> vertexes;
+    vector<vector<int> > adjMat;
+    int n;
+public:
+    void readVertexes() {
+        cin >> n;                   //TODO: 将顶点数读入成员变量n
+        int i = 0;
+        for(; i<n; ++i) {           //TODO： 从输入初始化vertexes数组
+            Vertex v(i);
+            this->vertexes.push_back(v);
+        }
+
+        //为成员变量adjMat创建内存，赋初值
+        for(i = 0; i < n; ++i) {
+            vector<int> row;
+            int j = 0;
+            for(; j<n; ++j) {
+                row.push_back(0);   //TODO： 将0增加到row最后
+            }
+            adjMat.push_back(row);  //TODO： 将row增加到adjMat最后
+        }
+    }
+    void readAdjMatrix() {
+        //read the adjacent info into this->adjMat
+        int edges;
+        cin >> edges;
+        int i = 0;
+        int s, t, w;  //s源顶点编号，t目的顶点编号，w边长
+        for(; i<edges; ++i) {
+            cin >> s >> t >> w;
+            adjMat[s][t] = w;       //TODO: 读入s,t,w，并将adjMat的第s行、第t列的值改为w.
+        }
+    }
+
+    void updateEarly(int parentNo, queue<int>& earlyQue) {
+        int parentEarly = vertexes[parentNo].early;  //读入父结点early值
+
+        int j = 0;
+        for(; j < n; ++j) {
+            int edgeValue = adjMat[parentNo][j];
+            if (edgeValue == 0) continue;  //若父结点与结点j没有边相连，pass
+
+            Vertex &child = vertexes[j];
+            child.updateEarly(parentEarly, edgeValue); //更新子结点j的early信息
+
+            if(!child.hasEnterQueue) {
+                child.hasEnterQueue = true; //将子结点加入队列
+                earlyQue.push(j);
+            }
+        }
+    }
+    void updateLater(int childNo, queue<int>& laterQue) {
+        int parentLater = vertexes[childNo].later;
+
+        int j = 0;
+        for(; j < n; ++j) {
+            int edgeValue = adjMat[j][childNo];
+            if (edgeValue == 0) continue;
+
+            Vertex &parent = vertexes[j];
+            parent.updateLater(parentLater, edgeValue);
+
+            if (!parent.hasEnterQueue) {
+                parent.hasEnterQueue = true;
+                laterQue.push(j);
+            }
+        }
+    }
+
+    int getRoot() {
+        //获取入度为0的顶点
+        int j = 0;
+        for(; j < n; ++j) {
+            int i = 0;
+            for(; i < n && adjMat[i][j] == 0; ++i);
+            if (i >= n) return j; //j has not any in-edges.
+        }
+        return -1;  //表示没找到
+    }
+    int getLeaf() {
+        int j = 0;
+        for(; j < n; ++j) {
+            int i = 0;
+            for(; i < n && adjMat[j][i] == 0; ++i);
+            if (i >= n) return j; //j has not any in-edges.
+        }
+        return -1;
+        //TODO： 获取出度为0的顶点
+    }
+
+    void printEarlyLater(bool isEarly) {
+        int i=0;
+        for(; i<n; ++i) {
+            Vertex& v = vertexes[i];
+            if (isEarly)
+                cout << v.early << " ";
+            else {
+                cout << v.later << " ";
+            }
+        }
+        cout << endl;
+    }
+
+    void findEarly() {
+        //执行关键路径算法，求每个顶点的最早开始时间。
+        int r = getRoot();
+        Vertex& root = vertexes[r];
+        root.hasEnterQueue = true;
+        root.early = 0;
+
+        queue<int> que;
+        que.push(r);
+
+        while(!que.empty()) {
+            int p = que.front();
+            que.pop();
+
+            updateEarly(p, que);
+        }
+
+        printEarlyLater(true);
+    }
+    void clearEnterQueue() {
+        int i=0;
+        for(; i<n; ++i) {
+            vertexes[i].hasEnterQueue = false;
+        }
+    }
+    void findLater() {
+        clearEnterQueue();
+        int r = getLeaf();
+        Vertex &parent = vertexes[r];
+        parent.hasEnterQueue = true;
+        parent.later = parent.early;
+
+        queue<int> que;
+        que.push(r);
+
+        while(!que.empty())
+        {
+            int p = que.front();
+            que.pop();
+
+            updateLater(p,que);
+        }
+        printEarlyLater(false);
+        //TODO：调用clearEnterQueue，以清除每个顶点的hasEnterQueue=false
+        //执行关键路径算法，求每个顶点的最迟开始时间。
+    }
+
+    void main() {
+        readVertexes();
+        readAdjMatrix();
+        findEarly();
+        findLater();
+    }
+};
+
+
+int main() {
+    int t = 1;
+    //cin >> t;
+    while (t--) {
+        Graph g;
+        g.main();
+    }
+    return 0;
+}
